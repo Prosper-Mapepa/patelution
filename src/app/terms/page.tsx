@@ -1,8 +1,9 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function TermsPage() {
+function TermsInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const from = searchParams.get("from");
@@ -79,6 +80,20 @@ export default function TermsPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function TermsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col gap-6 py-6 text-sm text-slate-300 sm:text-base">
+          Loading terms…
+        </div>
+      }
+    >
+      <TermsInner />
+    </Suspense>
   );
 }
 
