@@ -1,15 +1,214 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { apiRegister } from "@/lib/api";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
 export default function RegisterPage() {
   const router = useRouter();
-  const [step, setStep] = useState<Step>(1);
+  const searchParams = useSearchParams();
+  const stepFromQuery = Number(searchParams.get("step") ?? "1");
+  const initialStep: Step =
+    stepFromQuery >= 1 && stepFromQuery <= 5 ? (stepFromQuery as Step) : 1;
+  const months = useMemo(
+    () => [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December",
+    ],
+    [],
+  );
+  const days = useMemo(() => Array.from({ length: 31 }, (_, index) => index + 1), []);
+  const years = useMemo(() => {
+    const current = new Date().getFullYear();
+    const start = 1900;
+    const values: number[] = [];
+    for (let year = current; year >= start; year -= 1) {
+      values.push(year);
+    }
+    return values;
+  }, []);
+  const countries = useMemo(
+    () => [
+      "Afghanistan",
+      "Albania",
+      "Algeria",
+      "Andorra",
+      "Angola",
+      "Argentina",
+      "Armenia",
+      "Australia",
+      "Austria",
+      "Azerbaijan",
+      "Bahamas",
+      "Bahrain",
+      "Bangladesh",
+      "Belarus",
+      "Belgium",
+      "Belize",
+      "Benin",
+      "Bhutan",
+      "Bolivia",
+      "Bosnia and Herzegovina",
+      "Botswana",
+      "Brazil",
+      "Brunei",
+      "Bulgaria",
+      "Burkina Faso",
+      "Burundi",
+      "Cambodia",
+      "Cameroon",
+      "Canada",
+      "Cape Verde",
+      "Central African Republic",
+      "Chad",
+      "Chile",
+      "China",
+      "Colombia",
+      "Comoros",
+      "Costa Rica",
+      "Croatia",
+      "Cuba",
+      "Cyprus",
+      "Czech Republic",
+      "Democratic Republic of the Congo",
+      "Denmark",
+      "Djibouti",
+      "Dominican Republic",
+      "Ecuador",
+      "Egypt",
+      "El Salvador",
+      "Estonia",
+      "Ethiopia",
+      "Fiji",
+      "Finland",
+      "France",
+      "Gabon",
+      "Gambia",
+      "Georgia",
+      "Germany",
+      "Ghana",
+      "Greece",
+      "Guatemala",
+      "Guinea",
+      "Guyana",
+      "Haiti",
+      "Honduras",
+      "Hungary",
+      "Iceland",
+      "India",
+      "Indonesia",
+      "Iran",
+      "Iraq",
+      "Ireland",
+      "Israel",
+      "Italy",
+      "Ivory Coast",
+      "Jamaica",
+      "Japan",
+      "Jordan",
+      "Kazakhstan",
+      "Kenya",
+      "Kuwait",
+      "Kyrgyzstan",
+      "Laos",
+      "Latvia",
+      "Lebanon",
+      "Lesotho",
+      "Liberia",
+      "Libya",
+      "Liechtenstein",
+      "Lithuania",
+      "Luxembourg",
+      "Madagascar",
+      "Malawi",
+      "Malaysia",
+      "Maldives",
+      "Mali",
+      "Malta",
+      "Mauritania",
+      "Mauritius",
+      "Mexico",
+      "Moldova",
+      "Monaco",
+      "Mongolia",
+      "Montenegro",
+      "Morocco",
+      "Mozambique",
+      "Myanmar",
+      "Namibia",
+      "Nepal",
+      "Netherlands",
+      "New Zealand",
+      "Nicaragua",
+      "Niger",
+      "Nigeria",
+      "North Macedonia",
+      "Norway",
+      "Oman",
+      "Pakistan",
+      "Panama",
+      "Paraguay",
+      "Peru",
+      "Philippines",
+      "Poland",
+      "Portugal",
+      "Qatar",
+      "Republic of the Congo",
+      "Romania",
+      "Russia",
+      "Rwanda",
+      "Saudi Arabia",
+      "Senegal",
+      "Serbia",
+      "Seychelles",
+      "Sierra Leone",
+      "Singapore",
+      "Slovakia",
+      "Slovenia",
+      "South Africa",
+      "South Korea",
+      "Spain",
+      "Sri Lanka",
+      "Sudan",
+      "Sweden",
+      "Switzerland",
+      "Syria",
+      "Taiwan",
+      "Tajikistan",
+      "Tanzania",
+      "Thailand",
+      "Togo",
+      "Trinidad and Tobago",
+      "Tunisia",
+      "Turkey",
+      "Uganda",
+      "Ukraine",
+      "United Arab Emirates",
+      "United Kingdom",
+      "United States",
+      "Uruguay",
+      "Uzbekistan",
+      "Venezuela",
+      "Vietnam",
+      "Zambia",
+      "Zimbabwe",
+    ],
+    [],
+  );
+  const [step, setStep] = useState<Step>(initialStep);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -17,12 +216,24 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  useEffect(() => {
+    setStep(initialStep);
+  }, [initialStep]);
+
   const goNext = () => {
-    setStep((current) => (current < 5 ? ((current + 1) as Step) : current));
+    setStep((current) => {
+      const next = current < 5 ? ((current + 1) as Step) : current;
+      router.replace(`/auth/register?step=${next}`);
+      return next;
+    });
   };
 
   const goBack = () => {
-    setStep((current) => (current > 1 ? ((current - 1) as Step) : current));
+    setStep((current) => {
+      const prev = current > 1 ? ((current - 1) as Step) : current;
+      router.replace(`/auth/register?step=${prev}`);
+      return prev;
+    });
   };
 
   const complete = async () => {
@@ -153,20 +364,19 @@ export default function RegisterPage() {
             </p>
             <div className="grid grid-cols-3 gap-3 text-sm sm:text-base">
               <select className="rounded-xl border border-slate-700/80 bg-slate-950/80 px-2.5 py-2 text-slate-50 outline-none ring-0 transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40">
-                <option>January</option>
-                <option>February</option>
-                <option>March</option>
-                <option>April</option>
+                {months.map((month) => (
+                  <option key={month}>{month}</option>
+                ))}
               </select>
               <select className="rounded-xl border border-slate-700/80 bg-slate-950/80 px-2.5 py-2 text-slate-50 outline-none ring-0 transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40">
-                <option>1</option>
-                <option>12</option>
-                <option>24</option>
+                {days.map((day) => (
+                  <option key={day}>{day}</option>
+                ))}
               </select>
               <select className="rounded-xl border border-slate-700/80 bg-slate-950/80 px-2.5 py-2 text-slate-50 outline-none ring-0 transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40">
-                <option>1991</option>
-                <option>1992</option>
-                <option>1993</option>
+                {years.map((year) => (
+                  <option key={year}>{year}</option>
+                ))}
               </select>
             </div>
           </div>
@@ -189,9 +399,9 @@ export default function RegisterPage() {
                   Nationality
                 </label>
                 <select className="mt-1.5 w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-3 py-2.5 text-sm text-slate-50 outline-none ring-0 transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40 sm:text-base">
-                  <option>USA</option>
-                  <option>Finland</option>
-                  <option>Spain</option>
+                  {countries.map((country) => (
+                    <option key={country}>{country}</option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -209,9 +419,9 @@ export default function RegisterPage() {
                   Default location
                 </label>
                 <select className="mt-1.5 w-full rounded-xl border border-slate-700/80 bg-slate-950/80 px-3 py-2.5 text-sm text-slate-50 outline-none ring-0 transition focus:border-teal-400 focus:ring-2 focus:ring-teal-500/40 sm:text-base">
-                  <option>USA</option>
-                  <option>Sweden</option>
-                  <option>United Kingdom</option>
+                  {countries.map((country) => (
+                    <option key={country}>{country}</option>
+                  ))}
                 </select>
               </div>
               <div>
@@ -233,19 +443,19 @@ export default function RegisterPage() {
               />
               <span>
                 I agree to the{" "}
-                <button
-                  type="button"
+                <Link
+                  href="/terms?from=register&step=5"
                   className="underline decoration-slate-500 underline-offset-2"
                 >
                   Terms of service
-                </button>{" "}
+                </Link>{" "}
                 and{" "}
-                <button
-                  type="button"
+                <Link
+                  href="/privacy?from=register&step=5"
                   className="underline decoration-slate-500 underline-offset-2"
                 >
                   Privacy policy
-                </button>
+                </Link>
                 .
               </span>
             </label>
