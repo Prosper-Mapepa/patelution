@@ -43,7 +43,7 @@ export default function LoginPage() {
         }}
       >
         <div>
-          <label className="block text-xs font-medium text-slate-300 sm:text-sm">
+          <label className="block text-sm font-medium text-slate-300 sm:text-sm">
             Email
           </label>
           <input
@@ -58,7 +58,7 @@ export default function LoginPage() {
         </div>
 
         <div>
-          <label className="block text-xs font-medium text-slate-300 sm:text-sm">
+          <label className="block text-sm font-medium text-slate-300 sm:text-sm">
             Password
           </label>
           <input
@@ -85,7 +85,7 @@ export default function LoginPage() {
         </button>
       </form>
 
-      <p className="text-xs text-slate-400 sm:text-sm">
+      <p className="text-sm text-slate-400 sm:text-sm">
         {error && <span className="mb-2 block text-[11px] text-red-400">{error}</span>}
         New to Patelution?{" "}
         <Link

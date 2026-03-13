@@ -1,0 +1,17 @@
+# Patelution frontend – Netlify configuration
+# If your repo root is the monorepo, set "Base directory" to "web" in Netlify site settings.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+# Use a recent Node version (Netlify often defaults to 18+)
+[build.environment]
+  NODE_VERSION = "20"
+
+# Next.js handles routing; optional redirects for legacy or marketing paths
+# [[redirects]]
+#   from = "/*"
+#   to = "/index.html"
+#   status = 200
+#   force = true

@@ -83,7 +83,7 @@ export function BottomNav() {
   const { isSignedIn, signOut, ready } = useAuth(pathname);
 
   const navLinkClass = (active: boolean) =>
-    `flex items-center gap-2 rounded-lg px-2 py-2 text-sm font-medium transition-colors sm:px-3 shrink-0 ${
+    `flex items-center gap-2 rounded-lg px-2.5 py-2.5 text-sm font-medium transition-colors sm:px-3 sm:text-base shrink-0 ${
       active ? "text-teal-300 bg-teal-500/10" : "text-slate-300 hover:text-slate-100 hover:bg-slate-800/50"
     }`;
 
@@ -96,7 +96,14 @@ export function BottomNav() {
             className={navLinkClass(pathname === "/")}
           >
             <IconBall className="shrink-0 text-teal-400" />
-            <span className="hidden sm:inline">Americano</span>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-semibold text-teal-300 sm:text-base">
+                Patelution
+              </span>
+              {/* <span className="text-xs text-slate-300 sm:text-sm">
+                Americano
+              </span> */}
+            </div>
           </Link>
           {ready && isSignedIn && (
             <Link
@@ -104,7 +111,7 @@ export function BottomNav() {
               className={navLinkClass(pathname === "/americano" || pathname?.startsWith("/americano/"))}
             >
               <IconDashboard className="shrink-0" />
-              <span className="hidden sm:inline">Dashboard</span>
+              <span>Dashboard</span>
             </Link>
           )}
           <Link
@@ -112,7 +119,7 @@ export function BottomNav() {
             className={navLinkClass(pathname === "/latest-americanos")}
           >
             <IconList className="shrink-0" />
-            <span className="hidden sm:inline">Latest Americanos</span>
+            <span>Latest Americanos</span>
           </Link>
         </div>
         <div className="flex shrink-0 items-center gap-1">
@@ -127,7 +134,7 @@ export function BottomNav() {
                 aria-label="Sign out"
               >
                 <IconLogOut className="shrink-0" />
-                <span className="hidden sm:inline">Sign out</span>
+                <span>Sign out</span>
               </button>
               <Link
                 href="/profile"
@@ -135,13 +142,13 @@ export function BottomNav() {
                 aria-label="Profile"
               >
                 <IconUser className="shrink-0" />
-                <span className="hidden sm:inline">Profile</span>
+                <span>Profile</span>
               </Link>
             </>
           ) : (
             <Link href="/auth/login" className={navLinkClass(false)} aria-label="Sign in">
               <IconLogIn className="shrink-0" />
-              <span className="hidden sm:inline">Sign in</span>
+              <span>Sign in</span>
             </Link>
           )}
         </div>
