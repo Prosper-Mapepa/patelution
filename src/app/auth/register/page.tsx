@@ -2,12 +2,12 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { apiRegister } from "@/lib/api";
 
 type Step = 1 | 2 | 3 | 4 | 5;
 
-export default function RegisterPage() {
+function RegisterPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const stepFromQuery = Number(searchParams.get("step") ?? "1");
@@ -496,6 +496,20 @@ export default function RegisterPage() {
         .
       </p>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-4 py-6 text-sm text-slate-300 sm:text-base">
+          Loading registration…
+        </div>
+      }
+    >
+      <RegisterPageInner />
+    </Suspense>
   );
 }
 
