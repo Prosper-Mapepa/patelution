@@ -145,6 +145,11 @@ export async function apiListTournamentsPublic() {
   return requestPublic<Tournament[]>("/tournaments");
 }
 
+/** Get one tournament without auth (for public Live Snapshot) */
+export async function apiGetTournamentPublic(id: string) {
+  return requestPublic<Tournament>(`/tournaments/${id}`);
+}
+
 export async function apiGetTournament(id: string) {
   return request<Tournament>(`/tournaments/${id}`);
 }

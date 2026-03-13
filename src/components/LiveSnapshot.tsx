@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import {
-  apiGetTournament,
-  apiListTournaments,
+  apiGetTournamentPublic,
+  apiListTournamentsPublic,
   Match,
   Tournament,
 } from "@/lib/api";
@@ -28,7 +28,7 @@ export function LiveSnapshot() {
 
     async function load() {
       try {
-        const tournaments = await apiListTournaments();
+        const tournaments = await apiListTournamentsPublic();
         if (cancelled || tournaments.length === 0) {
           if (!cancelled) {
             setState((prev) => ({ ...prev, loading: false }));
@@ -52,7 +52,7 @@ export function LiveSnapshot() {
               new Date(a.createdAt).getTime(),
           )[0];
 
-        const detailed = await apiGetTournament(latest.id);
+        const detailed = await apiGetTournamentPublic(latest.id);
         if (cancelled) return;
 
         const matches = detailed.matches ?? [];
@@ -68,9 +68,19 @@ export function LiveSnapshot() {
           (m.scoreA > 0 || m.scoreB > 0) && !isFinished(m);
 
         const inProgressMatches = matches.filter(isInProgress);
-        const match: Match | undefined = inProgressMatches.length > 0
-          ? inProgressMatches.sort((a, b) => a.round - b.round || (a.scoreA + a.scoreB) - (b.scoreA + b.scoreB))[0]
-          : undefined;
+        // Prefer a match that has started (has scores); otherwise if tournament is in progress, show first match as "current"
+        let match: Match | undefined =
+          inProgressMatches.length > 0
+            ? inProgressMatches.sort(
+                (a, b) =>
+                  a.round - b.round ||
+                  a.scoreA + a.scoreB - (b.scoreA + b.scoreB),
+              )[0]
+            : undefined;
+        if (!match && detailed.status === "in_progress" && matches.length > 0) {
+          const byRound = [...matches].sort((a, b) => a.round - b.round);
+          match = byRound[0];
+        }
 
         setState({
           loading: false,
